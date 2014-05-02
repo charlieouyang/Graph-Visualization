@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="http://fonts.googleapis.com/css?family=Arvo" rel="stylesheet" type="text/css">
+	<link href="http://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="kendo.css">
+	<link rel="stylesheet" type="text/css" href="jquery.fancybox.css">
+	
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script src="jit.js"></script>
+	<script src="jquery.fancybox.js"></script>
+</head
+<body onload="init();">
+
+	<div id="container" style="width:1680px; height:1000px">
+		<div id="center-container">
+			<div id="infovis" style="width:1300px; height:1000px">
+			</div>
+		</div>
+		
+		<div id="right-container">
+			<div id="right-top-container">
+				<div id="inner-details"></div>
+			</div>
+			<br>
+			<div id="right-bottom-container">
+				<div id="new-node-container">
+					<div class='propertyName' ><a id='addNewNode' href='#addNewNodeDataForm'>Add Node</a></div>
+				</div>
+			</div>
+			<div id="currently-selected-node" style="display:none"></div>
+		</div>
+	</div>
+	
+	<div style="display:none">
+		<div id="addNewPropertyDataForm">
+			<div class='propertyName' style='float: left;'>Add Name </div><input id='addPropertyFieldName' type='text' style='float:right'></input><br>
+			<div class='propertyName' style='float: left;'>Add Value </div><input id='addPropertyFieldValue' type='text' style='float:right'></input><br>
+			<button class='k-button' type='button' id='addPropertyButton' onclick='submitNewProperty()'>Submit</button>
+		</div>
+		
+		<div id="addNewConnectionDataForm">
+			<div class='propertyName' style='float: left;'>Label </div><input id='addConnectionLabel' type='text' style='float:right'></input><br>
+			<div class='propertyName' style='float: left;'>To Node </div><input id='addConnectionToHere' type='text' style='float:right'></input><br>
+			<button class='k-button' type='button' id='addConnectionButton' onclick='submitNewConnection()'>Submit</button><br>
+		</div>
+		
+		<div id="addNewNodeDataForm">
+			<div class='propertyName' style='float: left;'>ID </div><input id='addNodeID' type='text' style='float:right'></input><br>
+			<div class='propertyName' style='float: left;'>Name </div><input id='addNodeLabel' type='text' style='float:right'></input><br>
+			<button class='k-button' type='button' id='addNodeButton' onclick='submitNewNode()'>Submit</button><br>
+		</div>
+		
+	</div>
+</body>
+
+<script type="text/javascript">
+    $( document ).ready(function() {
+        console.log( "document loaded" );
+		loadGraph();
+		
+		$("a#addNewProperty").fancybox();
+		$("a#addNewConnection").fancybox();
+		$("a#addNewNode").fancybox();
+	});
+	
+	var json = [{ //homersimpson
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "40",
+					"Gender": "Male"
+				}
+			},
+			"id": "homersimpson",
+			"name": "Homer Simpson"
+
+		}, { //marge
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "38",
+					"Gender": "Female"
+				}
+			},
+			"id": "margesimpson",
+			"name": "Marge Simpson"
+		},
+
+		{ //bart
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "10",
+					"Gender": "Male"
+				}
+			},
+			"id": "bartsimpson",
+			"name": "Bart Simpson"
+		},
+
+		{ //lisa
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "8",
+					"Gender": "Female"
+				}
+			},
+			"id": "lisasimpson",
+			"name": "Lisa Simpson"
+		},
+
+		{ //Milhouse
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "10",
+					"Gender": "Male"
+				}
+			},
+			"id": "milhousevanhouten",
+			"name": "Milhouse Van Houten"
+		},{ //charles montgomery burns
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "123",
+					"Gender": "Male"
+				}
+			},
+			"id": "charlesmontgomeryburns",
+			"name": "Charles Montgomery Burns"
+		}, { //bleeding gums murphy
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "59",
+					"Gender": "Male"
+				}
+			},
+			"id": "bleedinggumsmurphy",
+			"name": "Bleeding Gums Murphy"
+		}, { //patty bouvier
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "42",
+					"Gender": "Female"
+				}
+			},
+			"id": "pattybouvier",
+			"name": "Patty Bouvier"
+		}, { //selma bouvier
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "42",
+					"Gender": "Female"
+				}
+			},
+			"id": "selmabouvier",
+			"name": "Selma Bouvier"
+		}, { //ned flanders
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "48",
+					"Gender": "Male"
+				}
+			},
+			"id": "nedflanders",
+			"name": "Ned Flanders"
+		}, { //maude flanders
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "42",
+					"Gender": "Female"
+				}
+			},
+			"id": "maudeflanders",
+			"name": "Maude Flanders"
+		}, { //rod flanders
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "12",
+					"Gender": "Male"
+				}
+			},
+			"id": "rodflanders",
+			"name": "Rod Flanders"
+		}, { //rod flanders
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "12",
+					"Gender": "Male"
+				}
+			},
+			"id": "rodflanders",
+			"name": "Rod Flanders"
+		}, { //todd flanders
+			"adjacencies": [],
+			"data": {
+				"$color": "#ffd521",
+				"$type": "circle",
+                "showConnections": "true",
+				"properties": {
+					"Age": "14",
+					"Gender": "Male"
+				}
+			},
+			"id": "toddflanders",
+			"name": "Todd Flanders"
+		},
+
+	    //TEAMS
+		{ //IT Teams
+			"adjacencies": [{
+				"nodeTo": "investmentit",
+				"nodeFrom": "it",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "investmentit-partof-it"
+				}
+			},{
+				"nodeTo": "memberservicesit",
+				"nodeFrom": "it",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "memberservicesit-partof-it"
+				}
+			}],
+
+			"data": {
+				"$color": "#ff0000",
+				"$type": "square",
+                "properties": {
+					"About": "Supports operations by managing the organization's technology and information assets."
+				}
+
+			},
+			"id": "it",
+			"name": "Information Technology"
+            },{ //Investment Teams
+			"adjacencies": [{
+				"nodeTo": "assetmixandrisk",
+				"nodeFrom": "investmentteam",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "assetmixandrisk-partof-investmentteam"    
+				}
+			},{
+				"nodeTo": "fixedincomeandalternativeinvestments",
+				"nodeFrom": "investmentteam",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "fixedincomeandalternativeinvestments-partof-investmentteam"
+				}
+			}],
+			"data": {
+				"$color": "#ff0000",
+				"$type": "square",
+                "properties": {
+					"About": "Oversees the pension fund and implements diversified investment strategy."
+				}
+			},
+			"id": "investmentteam",
+			"name": "Investment"
+            },{ //Corporate Teams
+			"adjacencies": [{
+				"nodeTo": "otpp",
+				"nodeFrom": "corporateteams",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "corporateteams-partof-otpp"
+				}
+			}],
+			"data": {
+				"$color": "#ff0000",
+				"$type": "square",
+                "properties": {
+					"About": "Provides advice and support to others across the organization."
+				}
+			},
+			"id": "corporateteams",
+			"name": "Corporate"
+            },{ //Finance Teams
+			"adjacencies": [{
+				"nodeTo": "otpp",
+				"nodeFrom": "financeteams",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "finance-partof-otpp"
+				}
+			}],
+			"data": {
+				"$color": "#ff0000",
+				"$type": "square",
+                    "properties": {
+					"About": "Provides daily customer service and project support to the Investment and Member Services divisions."
+				}
+			},
+			"id": "financeteams",
+			"name": "Finance"
+            },{ //Member Services Teams
+			"adjacencies": [{
+				"nodeTo": "otpp",
+				"nodeFrom": "memberservices",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "memberservices-partof-otpp"
+				}
+			}],
+			"data": {
+				"$color": "#ff0000",
+				"$type": "square",
+                "properties": {
+					"About": "Aims to provide immediate personalized service to working teachers and retired members."
+				}
+			},
+			"id": "memberservices",
+			"name": "Member Services"
+            },
+
+        //Departments
+		{ //Asset Mix and Risk
+			"adjacencies": [{
+				"nodeTo": "lisasimpson",
+				"nodeFrom": "assetmixandrisk",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "lisasimpson-worksin-assetmixandrisk"
+				}
+			}, {
+				"nodeTo": "bartsimpson",
+				"nodeFrom": "assetmixandrisk",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "bartsimpson-worksin-assetmixandrisk"
+				}
+			}, {
+				"nodeTo": "milhousevanhouten",
+				"nodeFrom": "assetmixandrisk",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "milhousevanhouten-worksin-assetmixandrisk"
+				}
+			}, {
+				"nodeTo": "toddflanders",
+				"nodeFrom": "assetmixandrisk",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "toddflanders-worksin-assetmixandrisk"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+				"properties": {
+					"Type": "Investment Department",
+					"About": "Oversees the development of the fund's long term investment strategy."
+				}
+			},
+			"id": "assetmixandrisk",
+			"name": "Asset Mix and Risk"
+		}, { //Investment IT
+			"adjacencies": [{
+				"nodeTo": "homersimpson",
+				"nodeFrom": "investmentit",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "homersimpson-worksin-investmentit"
+				}
+			}, {
+				"nodeTo": "maudeflanders",
+				"nodeFrom": "investmentit",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "maudeflanders-worksin-investmentit"
+				}
+			},{
+				"nodeTo": "charlesmontgomeryburns",
+				"nodeFrom": "investmentit",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "charlesmontgomeryburns-worksin-investmentit"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                "properties": {
+					"About": "Makes sure that our investing and finance professionals have their technology, services and solutions they need to do their jobs."
+				}
+			},
+			"id": "investmentit",
+			"name": "Investment IT"
+		}, { //Member Service IT
+			"adjacencies": [{
+				"nodeTo": "pattybouvier",
+				"nodeFrom": "memberservicesit",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "pattybouvier-worksin-memberservicesit"
+				}
+			}, {
+				"nodeTo": "selmabouvier",
+				"nodeFrom": "memberservicesit",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "selmabouvier-worksin-memberservicesit"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                "properties": {
+					"About": "Develops, delivers, maintains and supports all Member services systems and applications."
+				}
+			},
+			"id": "memberservicesit",
+			"name": "Member Services IT"
+		}, { //Pension Law and Policy Group
+			"adjacencies": [{
+				"nodeTo": "nedflanders",
+				"nodeFrom": "pensionlawandpolicygroup",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "nedflanders-worksin-pensionlawandpolicygroup"
+				}
+			},{
+				"nodeTo": "corporateteams",
+				"nodeFrom": "pensionlawandpolicygroup",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "pensionlawandpolicygroup-partof-corporateteams"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                    "properties": {
+					"About": "Interprets pension plan policies, provisions and privacy matters and develops rules used in determining pension entitlements."
+				    }
+			},
+			"id": "pensionlawandpolicygroup",
+			"name": "Pension Law & Policy Group"
+		},{ //Fixed Income and Alternative Investments
+			"adjacencies": [{
+				"nodeTo": "rodflanders",
+				"nodeFrom": "fixedincomeandalternativeinvestments",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "rodflanders-worksin-fixedincomeandalternativeinvestments"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                "properties": {
+					"About": "Invests in bonds and other securities across the credit spectrum, and manages the fund's day-to-day cash flows."
+				}
+			},
+			"id": "fixedincomeandalternativeinvestments",
+			"name": "Fixed Income and Alternative Investments"
+		},{ //Infrastructure
+			"adjacencies": [{
+				"nodeTo": "investmentteam",
+				"nodeFrom": "infrastructure",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "infrastructure-partof-investmentteam"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                "properties": {
+					"About": "Manages our global infrastructure and timberland portfolio, which includes utilities, airports, toll roads, marine container terminals and timberlands."
+				}
+			},
+			"id": "infrastructure",
+			"name": "Infrastructure"
+		},{ //Human Resources
+			"adjacencies": [{
+				"nodeTo": "margesimpson",
+				"nodeFrom": "humanresources",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "margesimpson-worksin-humanresources"
+				}
+			},{
+				"nodeTo": "corporateteams",
+				"nodeFrom": "humanresources",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "humanresources-part of-corporateteams"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                    "properties": {
+					"About": "Is responsible for staff recruitment, compensation and benefits, employee relations, work culture, and learning and development."
+				    }
+			},
+			"id": "humanresources",
+			"name": "Human Resources"
+		},{ //Audit Services
+			"adjacencies": [{
+				"nodeTo": "corporateteams",
+				"nodeFrom": "auditservices",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "auditservices-partof-corporateteams"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                    "properties": {
+					"About": "Provides independent, objective assurance that our controls and operating processes at Teachers' work properly and effectively."
+				    }
+			},
+			"id": "auditservices",
+			"name": "Audit Services"
+		},{ //Corporate Communications
+			"adjacencies": [{
+				"nodeTo": "corporateteams",
+				"nodeFrom": "corporatecommunications",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "corporatecommunications-partof-corporateteams"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                    "properties": {
+					"About": "Advises on communications strategies and offers services to make sure our pension and investment audiences know what Teachers' is doing and why."
+				    }
+			},
+			"id": "corporatecommunications",
+			"name": "Corporate Communications"
+		},{ //ePMO
+			"adjacencies": [{
+				"nodeTo": "corporateteams",
+				"nodeFrom": "epmo",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "epmo-partof-corporateteams"
+				}
+			},{
+				"nodeTo": "bleedinggumsmurphy",
+				"nodeFrom": "epmo",
+				"data": {
+					"labeltext": "works in",
+					"labelid": "bleedinggumsmurphy-worksin-epmo"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                    "properties": {
+					"About": "Standardizes our project planning and monitoring, implementation and governance."
+				    }
+			},
+			"id": "epmo",
+			"name": "ePMO"
+		},{ //legal
+			"adjacencies": [{
+				"nodeTo": "corporateteams",
+				"nodeFrom": "legal",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "legal-partof-corporateteams"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                    "properties": {
+					"About": "Gives legal advice and representation on plan provisions, contracts, transactions, compliance and litigation."
+				    }
+			},
+			"id": "legal",
+			"name": "Legal"
+		},
+        //FINANCE
+        { //investment finance
+			"adjacencies": [{
+				"nodeTo": "financeteams",
+				"nodeFrom": "investmentfinanceoperations",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "investmentfinanceoperations-partof-financeteams"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                    "properties": {
+					"About": "Supports the day-to-day needs of the Investment Division. This covers daily pricing of liquid investments and pricing models, trade settlement confirmations, reconciliations, annual and quarterly valuations of illiquid instruments, and deal support."
+				    }
+			},
+			"id": "investmentfinanceoperations",
+			"name": "Investment Finance Operations"
+		},{ //Compliance, ...
+			"adjacencies": [{
+				"nodeTo": "financeteams",
+				"nodeFrom": "compliance",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "compliance-partof-financeteams"
+				}
+			}],
+			"data": {
+				"$color": "#00000",
+				"$type": "star",
+                    "properties": {
+					"About": "Provides monitoring and analytic support to the Investment Division."
+				    }
+			},
+			"id": "compliance",
+			"name": "Compliance, Analytics, Performance & Data Management"
+		},
+
+		//Projects
+		{ //TQLR
+			"adjacencies": [{
+				"nodeTo": "lisasimpson",
+				"nodeFrom": "tqlr",
+				"data": {
+					"labeltext": "is working on",
+					"labelid": "lisasimpson-likes-tqlr"
+				}
+			}, {
+				"nodeTo": "bleedinggumsmurphy",
+				"nodeFrom": "tqlr",
+				"data": {
+					"labeltext": "is working on",
+					"labelid": "bleedinggumsmurphy-likes-tqlr"
+				}
+			}],
+			"data": {
+				"$color": "#05386b",
+				"$type": "triangle",
+                "properties": {
+					"About": "Project created for the purposes of diagram."
+				    }
+			},
+			"id": "tqlr",
+			"name": "TQLR"
+		}, { //Coop Cool
+			"adjacencies": [{
+				"nodeTo": "charlesmontgomeryburns",
+				"nodeFrom": "datamodel",
+				"data": {
+					"labeltext": "is working on",
+					"labelid": "charlesmontgomeryburns-likes-coopcool"
+				}
+			}, {
+				"nodeTo": "maudeflanders",
+				"nodeFrom": "datamodel",
+				"data": {
+					"labeltext": "is working on",
+					"labelid": "maudeflanders-likes-coopcool"
+				}
+			}],
+			"data": {
+				"$color": "#05386b",
+				"$type": "triangle",
+				"properties": {
+					"Project Description": "Awesome",
+				}
+			},
+			"id": "coopcool",
+			"name": "CO-OP Cool"
+		}, { //OTPP
+			"adjacencies": [{
+				"nodeTo": "it",
+				"nodeFrom": "otpp",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "it-partof-otpp"
+				}
+			},{
+				"nodeTo": "investmentteam",
+				"nodeFrom": "otpp",
+				"data": {
+					"labeltext": "part of",
+					"labelid": "investmentteam-partof-otpp"
+				}
+			}],
+			"data": {
+				"$color": "#00ff00",
+				"$type": "square",
+                    "properties": {
+                    "Established":"1990",
+					"About": "At Teachers’ we are required to: invest plan assets to earn the best possible return at an appropriate level of risk, administer the pension plan, pay benefits and collect contributions, report on the plan's funding status "
+				}
+			},
+			"id": "otpp",
+			"name": "OTPP"
+		}
+	];
+	
+	//label placement on edges
+	$jit.ForceDirected.Plot.EdgeTypes.implement({
+			'custom-line': {
+				'render': function(adj, canvas){
+					//plot arrow edge
+					this.edgeTypes.line.render.call(this, adj, canvas);
+					//get nodes cartesian coordinates
+					var pos = adj.nodeFrom.pos.getc(true);
+					var posChild = adj.nodeTo.pos.getc(true);
+					//check for edge label in data
+					var data = adj.data;
+					if (data.labelid && data.labeltext) {
+						//now adjust the label placement
+						var radius = this.viz.canvas.getSize(); 
+						var x = parseInt((pos.x + posChild.x - (data.labeltext.length * 5)) / 2); 
+						var y = parseInt((pos.y + posChild.y ) /2); 
+						this.viz.canvas.getCtx().fillText(data.labeltext, x, y); 
+					}
+				}
+			}	
+	});
+	
+	function loadGraph(){
+
+		var fd = new $jit.ForceDirected({
+            //id of the visualization container  
+            injectInto: 'infovis',
+            //Enable zooming and panning  
+            //with scrolling and DnD  
+            Navigation: {
+                enable: true,
+                type: 'Native',
+                //Enable panning events only if we're dragging the empty  
+                //canvas (and not a node).  
+                panning: 'avoid nodes',
+                zooming: 50 //zoom speed. higher is more sensible  
+            },
+            // Change node and edge styles such as  
+            // color and width.  
+            // These properties are also set per node  
+            // with dollar prefixed data-properties in the  
+            // JSON structure.  
+            Node: {
+                overridable: true,
+                dim: 7
+            },
+            //Edge: {
+            //	overridable: true,
+            //	color: '#23A4FF',
+            //	lineWidth: 13
+            //},
+            Edge: {
+                'overridable': true,
+                'color': '#111111',
+                'type': 'custom-line'
+            },
+            // Add node events  
+            Events: {
+                enable: true,
+                type: 'Native',
+
+                //Change cursor style when hovering a node  
+                onMouseEnter: function () {
+                    fd.canvas.getElement().style.cursor = 'move';
+                },
+                onMouseLeave: function () {
+                    fd.canvas.getElement().style.cursor = '';
+                },
+                //Update node positions when dragged  
+                onDragMove: function (node, eventInfo, e) {
+                    var pos = eventInfo.getPos();
+                    node.pos.setc(pos.x, pos.y);
+                    fd.plot();
+                },
+                //Implement the same handler for touchscreens  
+                onTouchMove: function (node, eventInfo, e) {
+                    $jit.util.event.stop(e); //stop default touchmove event  
+                    this.onDragMove(node, eventInfo, e);
+                }
+            },
+            //Number of iterations for the FD algorithm  
+            iterations: 200,
+            //Edge length  
+            levelDistance: 130,
+            // This method is only triggered  
+            // on label creation and only for DOM labels (not native canvas ones).  
+            onCreateLabel: function (domElement, node) {
+                // Create a 'name' and 'close' buttons and add them  
+                // to the main node label  
+                var nameContainer = document.createElement('span'),
+					style = nameContainer.style;
+                nameContainer.className = 'name';
+                nameContainer.innerHTML = node.name;
+                domElement.appendChild(nameContainer);
+                style.fontSize = "1.1em";
+                style.color = "#000000";
+                //Toggle a node selection when clicking  
+                //its name. This is done by animating some  
+                //node styles like its dimension and the color  
+                //and lineWidth of its adjacencies.  
+                nameContainer.onclick = function () {
+                    //set final styles  
+                    fd.graph.eachNode(function (n) {
+                        if (n.id != node.id) delete n.selected;
+                        n.setData('dim', 7, 'end');
+                        n.eachAdjacency(function (adj) {
+                            adj.setDataset('end', {
+                                lineWidth: 0.4,
+                                color: '#000000'
+                            });
+                            style = nameContainer.style;
+                            style.fontsize = "2em";
+                        });
+                    });
+                    if (!node.selected) {
+                        node.selected = true;
+                        node.setData('dim', 17, 'end');
+                        node.eachAdjacency(function (adj) {
+                            adj.setDataset('end', {
+                                lineWidth: 3,
+                                color: '#000000'
+                            });
+                        });
+                    } else {
+                        delete node.selected;
+                    }
+                    //trigger animation to final styles  
+                    fd.fx.animate({
+                        modes: ['node-property:dim',
+							'edge-property:lineWidth:color'
+						],
+                        duration: 500
+                    });
+					
+					$("#currently-selected-node").html("");
+					$("#currently-selected-node").html(node.id);
+                    // Build the right column relations list.  
+                    // This is done by traversing the clicked node connections.  
+                    var html = "<h1>" + node.name + "</h1><b> Properties:</b>";
+
+					if (Object.keys(node.data.properties).length > 0){
+						html += "<ul><li>";
+						var htmlListProperties = [];
+						var listOfProperties = node.data.properties;
+						jQuery.each(listOfProperties, function (propertyName, propertyValue) {
+							htmlListProperties.push("<div class='propertyName'>" + propertyName + "</div>" + "<div class='propertyValue'>" + propertyValue + "</div>");
+							var breakpoint = 69;
+						});
+						html += htmlListProperties.join("</li><li>") + "</li></ul>";
+					}
+					else{
+						html += "<br>";
+					}
+					
+					html += "<div class='propertyName' ><a id='addNewProperty' href='#addNewPropertyDataForm'>Add Property</a></div>"
+
+					var showConnections = node.data.showConnections;
+					if (showConnections == "true"){
+						html += "<b> Connections:</b>";
+						
+						if (Object.keys(node.adjacencies).length > 0){
+							html += "<ul><li>";
+							var list = [];
+							node.eachAdjacency(function (adj) {
+								if (adj.getData('alpha')) list.push("<div class='relationshipLabel'>" + adj.data.labeltext
+									+ "</div>" + "<div class='nodeLabel'>" + adj.nodeTo.name + "</div>");
+							});
+							//append connections information  
+							html = html + list.join("</li><li>") + "</li></ul>";
+						}
+						else{
+							html += "<br>";
+						}
+						
+						html += "<div class='propertyName' ><a id='addNewConnection' href='#addNewConnectionDataForm'>Add Connection</a></div><br>"
+					}
+					
+					$jit.id('inner-details').innerHTML = html;
+                };
+            },
+            // Change node styles when DOM labels are placed  
+            // or moved.  
+            onPlaceLabel: function (domElement, node) {
+                var style = domElement.style;
+                var left = parseInt(style.left);
+                var top = parseInt(style.top);
+                var w = domElement.offsetWidth;
+                style.left = (left - w / 2) + 'px';
+                style.top = (top + 10) + 'px';
+                style.display = '';
+            }
+        });
+		// load JSON data.  
+		fd.loadJSON(json);
+		// compute positions incrementally and animate.  
+		fd.computeIncremental({
+			iter: 40,
+			property: 'end',
+			onStep: function (perc) {
+				//Log.write(perc + '% loaded...');
+			},
+			onComplete: function () {
+				//Log.write('done');
+				fd.animate({
+					modes: ['linear'],
+					transition: $jit.Trans.Elastic.easeOut,
+					duration: 2500
+				});
+			}
+		});
+	}
+	
+	function submitNewProperty(){
+		parent.$.fancybox.close();
+		var propertyName = $("#addPropertyFieldName").val();
+		$("#addPropertyFieldName").val("");
+		var propertyValue = $("#addPropertyFieldValue").val();
+		$("#addPropertyFieldValue").val("");
+		var nodeID = $("#currently-selected-node").html();
+		
+		//Go through every root instance in data
+		for(var i=0; i<json.length; i++){
+			var node = json[i];
+			var nodeIDTemp = json[i].id;
+			if (nodeIDTemp == nodeID){
+				node.data.properties[propertyName] = propertyValue;
+				
+			}
+		}
+		
+		$("#infovis").html("");
+		$("#inner-details").html("");
+		loadGraph();
+		
+		this.selectedNodeID = nodeID;
+		var self = this;
+		window.setTimeout(function(){
+			$("#"+nodeID).find("span").click();
+		}, 500);
+	}
+	
+	function submitNewConnection(){
+		var connectionLabel = $("#addConnectionLabel").val();
+		$("#addConnectionLabel").val("");
+		var connectionToHereID = $("#addConnectionToHere").val();
+		$("#addConnectionToHere").val("");
+		var nodeID = $("#currently-selected-node").html();
+		var foundNode = false;
+		
+		for (var i=0; i<json.length; i++){
+			if (json[i].id == connectionToHereID){
+				foundNode = true;
+			}
+		}
+		if (!foundNode){
+			alert("Please enter a valid Node ID");
+			return;
+		}
+		
+		parent.$.fancybox.close();
+		//Go through every root instance in data
+		for(var i=0; i<json.length; i++){
+			var node = json[i];
+			var nodeIDTemp = json[i].id;
+			if (nodeIDTemp == nodeID){
+				if (node.adjacencies == null){
+					var newAdj = [{ "nodeTo": connectionToHereID, "nodeFrom": nodeID, "data": { "labeltext": connectionLabel, "labelid": nodeID+"-"+connectionLabel+"-"+connectionToHereID } }];
+					node.adjacencies = newAdj;
+				}
+				else{
+					var newAdj = { "nodeTo": connectionToHereID, "nodeFrom": nodeID, "data": { "labeltext": connectionLabel, "labelid": nodeID+"-"+connectionLabel+"-"+connectionToHereID } };
+					node.adjacencies.push(newAdj);
+				}
+			}
+		}
+		
+		$("#infovis").html("");
+		$("#inner-details").html("");
+		loadGraph();
+		
+		this.selectedNodeID = nodeID;
+		var self = this;
+		window.setTimeout(function(){
+			$("#"+nodeID).find("span").click();
+		}, 500);
+		
+		var breakpoint = 69;
+	}
+	
+	
+	function submitNewNode(){
+		var nodeID = $("#addNodeID").val();
+		$("#addNodeID").val("");
+		var nodeLabel = $("#addNodeLabel").val();
+		$("#addNodeLabel").val("");
+		
+		var foundNode = false;
+		
+		for (var i=0; i<json.length; i++){
+			if (json[i].id == nodeID){
+				foundNode = true;
+			}
+		}
+		if (foundNode){
+			alert("This node ID already exists!");
+			return;
+		}
+		
+		parent.$.fancybox.close();
+		
+		var newNode = { "data": { "$color": "#ffd521", "$type": "circle", "properties": {} }, "id": nodeID, "name": nodeLabel };
+		json.push(newNode);
+		
+		$("#infovis").html("");
+		$("#inner-details").html("");
+		loadGraph();
+		
+		this.selectedNodeID = nodeID;
+		var self = this;
+		window.setTimeout(function(){
+			$("#"+nodeID).find("span").click();
+		}, 500);
+		
+		var breakpoint = 69;
+	}
+    
+</script>
+</html>
